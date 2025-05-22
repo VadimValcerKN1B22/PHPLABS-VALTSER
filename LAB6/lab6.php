@@ -1,25 +1,20 @@
 <?php
-// Підключення до бази даних
 $mysqli = new mysqli("localhost", "root", "", "orders");
 
-// Перевірка з'єднання
 if ($mysqli->connect_error) {
     die("Помилка з'єднання з БД: " . $mysqli->connect_error);
 }
 
-// ✅ Видалення замовлення
 if (isset($_GET['delete_id'])) {
     $delete_id = (int)$_GET['delete_id'];
     $stmt = $mysqli->prepare("DELETE FROM OrderDetails WHERE id = ?");
     $stmt->bind_param("i", $delete_id);
     $stmt->execute();
 
-    // ✅ Правильне перенаправлення
     header("Location: lab6.php");
     exit;
 }
 
-// ✅ Додавання замовлення
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $product_name = $_POST['product_name'];
     $quantity = (int)$_POST['quantity'];
@@ -31,13 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("sids", $product_name, $quantity, $price, $order_date);
         $stmt->execute();
 
-        // ✅ Правильне перенаправлення
         header("Location: lab6.php");
         exit;
     }
 }
 
-// ✅ Отримання замовлень (з фільтром або без)
 $filter_date = $_GET['date'] ?? '';
 $query = "SELECT * FROM OrderDetails";
 if (!empty($filter_date)) {
@@ -79,7 +72,6 @@ if (!empty($filter_date)) {
 
     <h2>📋 Список замовлень</h2>
 
-    <!-- Форма фільтрації -->
     <form method="GET" action="lab6.php">
         <label>Фільтр за датою:</label>
         <input type="date" name="date" value="<?= htmlspecialchars($filter_date) ?>">
@@ -89,7 +81,6 @@ if (!empty($filter_date)) {
 
     <br>
 
-    <!-- Таблиця замовлень -->
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
             <th>ID</th>
